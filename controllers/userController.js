@@ -19,7 +19,7 @@ const registerUser = async (req, res) => {
         }
 
         // Handle University user registration
-        if (userType === "university") {
+        if (userType === "student" || "staff") {
             const userExists = await UniversityUser.findOne({ email });
             if (userExists) return res.status(400).json({ message: "User already exists" });
 
@@ -49,7 +49,7 @@ const loginUser = async (req, res) => {
         }
 
         // Handle University user login
-        if (userType === "university") {
+        if (userType === "student" || "staff") {
             user = await UniversityUser.findOne({ universityId });
             if (!user) return res.status(400).json({ message: "Invalid university ID or password" });
         }
@@ -80,7 +80,7 @@ const getUserProfile = async (req, res) => {
         }
 
         // Fetch University user profile
-        if (userType === "university") {
+        if (userType === "student" || "staff") {
             user = await UniversityUser.findById(req.user.id).select("-password");
         }
 
