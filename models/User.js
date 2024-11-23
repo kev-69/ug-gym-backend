@@ -16,6 +16,9 @@ const universitySchema = new mongoose.Schema({
         required: true,
         unique: true,
     },
+    medicalCondition: {
+        type: String,
+    },
     phone: {
         type: String,
         required: true,
