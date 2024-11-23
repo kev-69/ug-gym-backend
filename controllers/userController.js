@@ -5,7 +5,7 @@ const bcrypt = require("bcrypt");
 // Register a new user (University or Public)
 const registerUser = async (req, res) => {
     const {
-        firstName, lastName, email, phone, userType, password, universityId, hallOrDepartment
+        firstName, lastName, email, phone, userType, password, universityId, hallOrDepartment, medicalCondition
     } = req.body;
 
     try {
@@ -24,7 +24,7 @@ const registerUser = async (req, res) => {
             if (userExists) return res.status(400).json({ message: "User already exists" });
 
             const user = await UniversityUser.create({
-                firstName, lastName, email, phone, userType, universityId, hallOrDepartment, password
+                firstName, lastName, email, phone, userType, universityId, hallOrDepartment, password, medicalCondition
             });
             return res.status(201).json({ message: "University user registered successfully", userId: user.id });
         }
