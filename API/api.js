@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const API = axios.create({
-    baseURL: "http://localhost:4000/api/users"
+    baseURL: "https://ug-gym-backend.onrender.com/api/users"
 });
 
 API.interceptors.request.use((config) => {
