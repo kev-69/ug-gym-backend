@@ -41,6 +41,20 @@ const universitySchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    subscription: {
+        package: {
+            type: String,
+        },
+        startDate: {
+            type: Date,
+        },
+        endDate: {
+            type: Date,
+        },
+        status: {
+            type: Boolean,
+        }
+    },
 }, { timestamps: true });
 
 // Public Schema
@@ -69,6 +83,20 @@ const publicSchema = new mongoose.Schema({
     password: {
         type: String,
         required: true,
+    },
+    subscription: {
+        package: {
+            type: String,
+        },
+        startDate: {
+            type: Date,
+        },
+        endDate: {
+            type: Date,
+        },
+        status: {
+            type: Boolean,
+        }
     },
 }, { timestamps: true });
 
