@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-const bcrypt = require("bcrypt");
 
 // University Schema
 const universitySchema = new mongoose.Schema({
@@ -27,20 +26,22 @@ const universitySchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    universityId: { // Fixed typo from "unversityId" to "universityId"
+    universityId: {
         type: Number,
         required: true,
         unique: true,
     },
-    hallOrDepartment: {
+    hallOfResidence: {
         type: String,
-        required: true,
+    },
+    department: {
+        type: String,
     },
     password: {
         type: String,
         required: true,
     },
-}, { timestamps: true }); // Moved timestamps to the schema options
+}, { timestamps: true });
 
 // Public Schema
 const publicSchema = new mongoose.Schema({
@@ -69,23 +70,7 @@ const publicSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-}, { timestamps: true }); // Moved timestamps to the schema options
-
-// Password hashing for University schema
-universitySchema.pre("save", async function (next) {
-    if (!this.isModified("password")) return next();
-
-    const salt = await bcrypt.genSalt(10);
-    this.password = await bcrypt.hash(this.password, salt);
-});
-
-// Password hashing for Public schema
-publicSchema.pre("save", async function (next) {
-    if (!this.isModified("password")) return next();
-
-    const salt = await bcrypt.genSalt(10);
-    this.password = await bcrypt.hash(this.password, salt);
-});
+}, { timestamps: true });
 
 // Create models
 const UniversityUser = mongoose.model("UniversityUser", universitySchema);
