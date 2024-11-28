@@ -54,7 +54,7 @@ const loginUniversityUser = async (req, res) => {
     if (!user) return res.status(400).json({ message: "Invalid university ID or password" });
 
     const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) return res.status(400).json({ message: "Invalid password" });
+    if (!isMatch) return res.status(400).json({ message: "Invalid university ID or password" });
 
     const token = jwt.sign({ id: user.id, userType: user.userType }, process.env.JWT_KEY, { expiresIn: "30d" });
 
@@ -79,7 +79,7 @@ const loginPublicUser = async (req, res) => {
     if (!user) return res.status(400).json({ message: "Invalid email or password" });
 
     const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) return res.status(400).json({ message: "Invalid password" });
+    if (!isMatch) return res.status(400).json({ message: "Invalid university ID or password" });
 
     const token = jwt.sign({ id: user.id, userType: user.userType }, process.env.JWT_KEY, { expiresIn: "30d" });
 
