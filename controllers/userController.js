@@ -24,7 +24,7 @@ const registerUser = async (req, res) => {
       const user = await PublicUser.create({
         firstName, lastName, email, phone, userType, password: hashedPassword
       });
-      return res.status(201).json({ message: "Public user registered successfully", userId: user.id });
+      return res.status(201).json({ message: "Public user registered successfully", user });
     }
 
     // Handle University user registration
@@ -35,7 +35,7 @@ const registerUser = async (req, res) => {
       firstName, lastName, email, phone, userType, universityId, hallOrDepartment, password: hashedPassword, medicalCondition
     });
 
-    return res.status(201).json({ message: "University user registered successfully", userId: user.id });
+    return res.status(201).json({ message: "University user registered successfully", user});
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -91,7 +91,7 @@ const loginPublicUser = async (req, res) => {
 
 // Get user profile
 const getUserProfile = async (req, res) => {
-  const { userType } = req.query; // Determine the user type from query or token payload
+  const { userType } = req.user;  // Extract userType from the token (attached by the authMiddleware)
 
   try {
     let user;
@@ -101,7 +101,7 @@ const getUserProfile = async (req, res) => {
       user = await PublicUser.findById(req.user.id).select("-password");
     }
 
-    // Fetch University user profile
+    // Fetch University user profile (either student or staff)
     if (userType === "student" || userType === "staff") {
       user = await UniversityUser.findById(req.user.id).select("-password");
     }
