@@ -45,6 +45,9 @@ const universitySchema = new mongoose.Schema({
         package: {
             type: String,
         },
+        price: {
+            type: String,
+        },
         startDate: {
             type: Date,
         },
@@ -86,6 +89,9 @@ const publicSchema = new mongoose.Schema({
     },
     subscription: {
         package: {
+            type: String,
+        },
+        price: {
             type: String,
         },
         startDate: {
