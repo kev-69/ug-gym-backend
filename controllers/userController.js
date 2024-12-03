@@ -91,7 +91,10 @@ const loginPublicUser = async (req, res) => {
 
 // Get user profile
 const getUserProfile = async (req, res) => {
-  const { userType } = req.user;  // Extract userType from the token (attached by the authMiddleware)
+  const { userType } = req.user;
+  if (!userType) {
+    return res.status(400).json({ message: "Invalid user type" });
+  }
 
   try {
     let user;
