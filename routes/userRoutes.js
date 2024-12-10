@@ -1,4 +1,5 @@
 const express = require("express");
+const router = express.Router();
 const {
     registerUser,
     loginUniversityUser,
@@ -7,7 +8,7 @@ const {
 } = require("../controllers/userController");
 
 const { protect } = require("../middlewares/authMiddleware")
-const router = express.Router();
+// console.log(typeof protect); // Should log "function"
 
 // Routes
 router.post("/register", registerUser);
