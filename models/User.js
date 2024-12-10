@@ -1,110 +1,148 @@
 const mongoose = require("mongoose");
 
 // University Schema
-const universitySchema = new mongoose.Schema({
+const universitySchema = new mongoose.Schema(
+  {
     firstName: {
-        type: String,
-        required: true,
+      type: String,
+      required: true,
     },
     lastName: {
-        type: String,
-        required: true,
+      type: String,
+      required: true,
     },
     email: {
-        type: String,
-        required: true,
-        unique: true,
+      type: String,
+      required: true,
+      unique: true,
     },
     medicalCondition: {
-        type: String,
+      type: String,
     },
     phone: {
-        type: String,
-        required: true,
+      type: String,
+      required: true,
     },
     userType: {
-        type: String,
-        required: true,
+      type: String,
+      required: true,
     },
     universityId: {
-        type: Number,
-        required: true,
-        unique: true,
+      type: Number,
+      required: true,
+      unique: true,
     },
     hallOfResidence: {
-        type: String,
+      type: String,
     },
     department: {
-        type: String,
+      type: String,
     },
     password: {
-        type: String,
-        required: true,
+      type: String,
+      required: true,
     },
     subscription: {
-        package: {
-            type: String,
-        },
-        price: {
-            type: String,
-        },
-        startDate: {
-            type: Date,
-        },
-        endDate: {
-            type: Date,
-        },
-        status: {
-            type: Boolean,
-        }
+      package: {
+        type: String,
+      },
+      price: {
+        type: String,
+      },
+      startDate: {
+        type: Date,
+      },
+      endDate: {
+        type: Date,
+      },
+      status: {
+        type: String, // Use 'active', 'expired', or 'pending'
+        default: "expired",
+      },
     },
-}, { timestamps: true });
+    pendingSubscription: {
+      package: {
+        type: String,
+      },
+      price: {
+        type: String,
+      },
+      expiresAt: {
+        type: Date, // 48-hour expiration for pending subscriptions
+      },
+      createdAt: {
+        type: Date,
+        default: Date.now,
+      },
+    },
+  },
+  { timestamps: true }
+);
 
 // Public Schema
-const publicSchema = new mongoose.Schema({
+const publicSchema = new mongoose.Schema(
+  {
     firstName: {
-        type: String,
-        required: true,
+      type: String,
+      required: true,
     },
     lastName: {
-        type: String,
-        required: true,
+      type: String,
+      required: true,
     },
     email: {
-        type: String,
-        required: true,
-        unique: true,
+      type: String,
+      required: true,
+      unique: true,
     },
     phone: {
-        type: String,
-        required: true,
+      type: String,
+      required: true,
     },
     userType: {
-        type: String,
-        required: true,
+      type: String,
+      required: true,
     },
     password: {
-        type: String,
-        required: true,
+      type: String,
+      required: true,
     },
     subscription: {
-        package: {
-            type: String,
-        },
-        price: {
-            type: String,
-        },
-        startDate: {
-            type: Date,
-        },
-        endDate: {
-            type: Date,
-        },
-        status: {
-            type: Boolean,
-        }
+      package: {
+        type: String,
+      },
+      price: {
+        type: String,
+      },
+      startDate: {
+        type: Date,
+      },
+      endDate: {
+        type: Date,
+      },
+      status: {
+        type: String, // Use 'active', 'expired', or 'pending'
+        default: "expired",
+      },
     },
-}, { timestamps: true });
+    pendingSubscription: {
+      package: {
+        type: String,
+      },
+      price: {
+        type: String,
+      },
+      expiresAt: {
+        type: Date, // 48-hour expiration for pending subscriptions
+      },
+      createdAt: {
+        type: Date,
+        default: Date.now,
+      },
+    },
+  },
+  { timestamps: true }
+);
 
 // Create models
 const UniversityUser = mongoose.model("UniversityUser", universitySchema);
