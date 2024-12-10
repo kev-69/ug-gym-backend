@@ -12,30 +12,32 @@ const protect = async (req, res, next) => {
       // Decode the token
       const decoded = jwt.verify(token, process.env.JWT_KEY);
 
-      // Check userType from the token
+      // Determine user model based on userType
       let user;
-
       if (decoded.userType === "student" || decoded.userType === "staff") {
         user = await UniversityUser.findById(decoded.id).select("-password");
       } else if (decoded.userType === "public") {
         user = await PublicUser.findById(decoded.id).select("-password");
       } else {
-        return res.status(401).json({ message: "Not authorized, invalid user type" });
+        return res.status(401).json({ message: "Unauthorized: Invalid user type" });
       }
 
-      // Attach the user to the request object
+      // Handle non-existent user
       if (!user) {
         return res.status(404).json({ message: "User not found" });
       }
+
+      // Attach user and userType to the request object
       req.user = user;
+      req.userType = decoded.userType;
 
       next(); // Continue to the next middleware
     } catch (error) {
-      console.error("Error verifying token:", error);
-      res.status(401).json({ message: "Not authorized, token failed" });
+      console.error("Token verification failed:", error.message);
+      res.status(401).json({ message: "Unauthorized: Token verification failed" });
     }
   } else {
-    res.status(401).json({ message: "Not authorized, no token" });
+    res.status(401).json({ message: "Unauthorized: No token provided" });
   }
 };
 
