@@ -2,7 +2,7 @@ const { UniversityUser, PublicUser } = require("../models/User");
 
 // Utility function to get the appropriate user model
 const getUserModel = (userType) => {
-    if (userType === "university") return UniversityUser;
+    if (userType === "student" || userType === "staff") return UniversityUser;
     if (userType === "public") return PublicUser;
     throw new Error("Invalid user type");
 };
