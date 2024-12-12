@@ -45,101 +45,84 @@ const universitySchema = new mongoose.Schema(
     subscription: {
       package: {
         type: String,
+        default: null,
       },
       price: {
         type: String,
+        default: null,
       },
       startDate: {
         type: Date,
+        default: null,
       },
       endDate: {
         type: Date,
+        default: null,
       },
       status: {
-        type: String, // Use 'active', 'expired', or 'pending'
-        default: "expired",
+        type: Boolean,
+        default: false,
       },
-    },
-    pendingSubscription: {
-      package: {
-        type: String,
-      },
-      price: {
-        type: String,
-      },
-      expiresAt: {
-        type: Date, // 48-hour expiration for pending subscriptions
-      },
-      createdAt: {
-        type: Date,
-        default: Date.now,
-      },
+      pendingAt: { 
+        type: Date, 
+        default: null }
     },
   },
   { timestamps: true }
 );
 
 // Public Schema
-const publicSchema = new mongoose.Schema(
-  {
-    firstName: {
+const publicSchema = new mongoose.Schema({
+  firstName: {
+    type: String,
+    required: true,
+  },
+  lastName: {
+    type: String,
+    required: true,
+  },
+  email: {
+    type: String,
+    required: true,
+    unique: true,
+  },
+  phone: {
+    type: String,
+    required: true,
+  },
+  userType: {
+    type: String,
+    required: true,
+  },
+  password: {
+    type: String,
+    required: true,
+  },
+  subscription: {
+    package: {
       type: String,
-      required: true,
+      default: null,
     },
-    lastName: {
+    price: {
       type: String,
-      required: true,
+      default: null,
     },
-    email: {
-      type: String,
-      required: true,
-      unique: true,
+    startDate: {
+      type: Date,
+      default: null,
     },
-    phone: {
-      type: String,
-      required: true,
+    endDate: {
+      type: Date,
+      default: null,
     },
-    userType: {
-      type: String,
-      required: true,
+    status: {
+      type: Boolean,
+      default: false,
     },
-    password: {
-      type: String,
-      required: true,
-    },
-    subscription: {
-      package: {
-        type: String,
-      },
-      price: {
-        type: String,
-      },
-      startDate: {
-        type: Date,
-      },
-      endDate: {
-        type: Date,
-      },
-      status: {
-        type: String, // Use 'active', 'expired', or 'pending'
-        default: "expired",
-      },
-    },
-    pendingSubscription: {
-      package: {
-        type: String,
-      },
-      price: {
-        type: String,
-      },
-      expiresAt: {
-        type: Date, // 48-hour expiration for pending subscriptions
-      },
-      createdAt: {
-        type: Date,
-        default: Date.now,
-      },
-    },
+  },
+  pendingAt: { 
+    type: Date, 
+    default: null }
   },
   { timestamps: true }
 );
