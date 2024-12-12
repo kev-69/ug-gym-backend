@@ -7,7 +7,7 @@ const {
 } = require("../controllers/subscriptionController");
 
 // Add a pending subscription
-router.post("/add-pending", addPendingSubscription);
+router.post("/pending", addPendingSubscription);
 
 // Activate a subscription after payment
 router.post("/activate", activateSubscription);
