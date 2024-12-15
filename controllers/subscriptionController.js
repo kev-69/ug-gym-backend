@@ -14,20 +14,18 @@ const addPendingSubscription = async (req, res) => {
 
     const UserModel = getUserModel(userType);
 
-    // Calculate expiration (48 hours from now)
     const startDate = new Date();
     const endDate = new Date(Date.now() + 48 * 60 * 60 * 1000);
 
-    // Find the user and update the subscription to pending
     const user = await UserModel.findByIdAndUpdate(
       userId,
       {
         "subscription.package": pkg,
         "subscription.price": price,
-        "subscription.startDate": startDate,
-        "subscription.endDate": endDate,
+        // "subscription.startDate": startDate,
+        // "subscription.endDate": endDate,
         "subscription.status": false,
-        "subscription.pendingAt": new Date(),
+        "pendingAt": new Date(),
       },
       { new: true }
     );
@@ -41,11 +39,13 @@ const addPendingSubscription = async (req, res) => {
       subscription: user.subscription,
     });
   } catch (error) {
-    res
-      .status(500)
-      .json({ message: "Failed to add subscription", error: error.message });
+    res.status(500).json({
+      message: "Failed to add subscription",
+      error: error.message,
+    });
   }
 };
+
 
 // Activate subscription after payment confirmation
 const activateSubscription = async (req, res) => {
