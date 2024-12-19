@@ -1,6 +1,7 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const Admin = require('../models/Admin');
+const { PublicUser, UniversityUser } = require("../models/User")
 
 // Register Admin
 const registerAdmin = async (req, res) => {
@@ -8,12 +9,13 @@ const registerAdmin = async (req, res) => {
         name,
         email,
         password,
+        userType,
     } = req.body
 
     try {
         const hashedPassword = await bcrypt.hash(password, 10);
         const user = await Admin.create({
-            name, email, password: hashedPassword
+            name, email, password: hashedPassword, userType,
         })
         return res.status(201).json({ message: "Admin successfully registered", user })
     } catch (error) {
@@ -42,11 +44,27 @@ const loginAdmin = async (req, res) => {
       expiresIn: '5d',
     });
 
-    res.json({ token, admin: { id: admin._id, email: admin.email } });
+    res.json({ token, admin });
   } catch (error) {
     res.status(500).json({ message: 'Something went wrong, please try again' });
     // console.log(error);
   }
 };
 
-module.exports = { registerAdmin, loginAdmin };
+// Get all user in the databse
+const getAllUsers = async (req, res) => {
+  try {
+    // Fetch all users from both collections
+    const publicUsers = await PublicUser.find().select("-password");
+    const universityUsers = await UniversityUser.find().select("-password");
+
+    // Combine results
+    const allUsers = [...publicUsers, ...universityUsers];
+
+    res.status(200).json({ message: "All users fetched successfully", users: allUsers });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+module.exports = { registerAdmin, loginAdmin, getAllUsers };
