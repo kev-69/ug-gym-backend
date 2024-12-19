@@ -40,7 +40,7 @@ const loginAdmin = async (req, res) => {
     }
 
     // Generate JWT token
-    const token = jwt.sign({ id: admin._id, role: 'admin' }, process.env.JWT_KEY, {
+    const token = jwt.sign({ id: admin._id, userType: "admin" }, process.env.JWT_KEY, {
       expiresIn: '5d',
     });
 
@@ -56,12 +56,19 @@ const getAllUsers = async (req, res) => {
   try {
     // Fetch all users from both collections
     const publicUsers = await PublicUser.find().select("-password");
+    // console.log("Public Users:", publicUsers); // Debug
     const universityUsers = await UniversityUser.find().select("-password");
+    // console.log("University Users:", universityUsers); // Debug
 
     // Combine results
     const allUsers = [...publicUsers, ...universityUsers];
-
-    res.status(200).json({ message: "All users fetched successfully", users: allUsers });
+    res.status(200).json({
+      message: "All users fetched successfully",
+      publicUserCount: publicUsers.length,
+      universityUserCount: universityUsers.length,
+      totalUserCount: allUsers.length,
+      users: allUsers,
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
