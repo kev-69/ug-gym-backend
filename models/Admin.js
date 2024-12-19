@@ -3,6 +3,10 @@ const mongoose = require("mongoose");
 // Admin Schema
 const AdminSchema = new mongoose.Schema(
   {
+    name: {
+      type: String,
+      required: true,
+    },
     email: {
       type: String,
       required: true,
@@ -12,6 +16,10 @@ const AdminSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    userType: {
+      type: String,
+      required: true,
+    }
 },
 { timestamps: true }
 );
