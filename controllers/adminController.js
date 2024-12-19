@@ -74,4 +74,84 @@ const getAllUsers = async (req, res) => {
   }
 };
 
-module.exports = { registerAdmin, loginAdmin, getAllUsers };
+const getUserDetails = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Attempt to find the user in both UniversityUser and PublicUser models
+    let user = await UniversityUser.findById(id).lean();
+    if (!user) {
+      user = await PublicUser.findById(id).lean();
+    }
+
+    // Handle non-existent user
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.status(200).json(user);
+  } catch (error) {
+    console.error("Error fetching user details:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+const updateUserStatus = async (req, res) => {
+  try {
+    const { id } = req.params; // User ID
+    const { status, startDate, endDate } = req.body; // Subscription details
+
+    // Validate status
+    const validStatuses = [true, false]; // Boolean values
+    if (!validStatuses.includes(status)) {
+      return res.status(400).json({ message: "Invalid status value" });
+    }
+
+    // Validate startDate and endDate if provided
+    if (startDate && isNaN(Date.parse(startDate))) {
+      return res.status(400).json({ message: "Invalid start date" });
+    }
+    if (endDate && isNaN(Date.parse(endDate))) {
+      return res.status(400).json({ message: "Invalid end date" });
+    }
+
+    // Ensure startDate is before endDate if both are provided
+    if (startDate && endDate && new Date(startDate) > new Date(endDate)) {
+      return res.status(400).json({
+        message: "Start date cannot be after end date",
+      });
+    }
+
+    // Update the user's subscription status, startDate, and endDate
+    const updateFields = {
+      "subscription.status": status,
+    };
+    if (startDate) updateFields["subscription.startDate"] = new Date(startDate);
+    if (endDate) updateFields["subscription.endDate"] = new Date(endDate);
+
+    const user =
+      (await UniversityUser.findByIdAndUpdate(id, updateFields, { new: true })) ||
+      (await PublicUser.findByIdAndUpdate(id, updateFields, { new: true }));
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.status(200).json({
+      message: "Subscription updated successfully",
+      user,
+    });
+  } catch (error) {
+    console.error("Error updating subscription:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+
+module.exports = { 
+  registerAdmin, 
+  loginAdmin, 
+  getAllUsers, 
+  getUserDetails, 
+  updateUserStatus 
+};
