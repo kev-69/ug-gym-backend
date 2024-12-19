@@ -63,11 +63,11 @@ const universitySchema = new mongoose.Schema(
         type: Boolean,
         default: false,
       },
+    },
       pendingAt: { 
         type: Date, 
         default: null }
     },
-  },
   { timestamps: true }
 );
 
