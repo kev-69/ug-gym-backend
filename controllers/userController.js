@@ -139,10 +139,67 @@ const sendOtp = async (req, res) => {
 
     await user.save();
 
+    // Customize the email message using the Tailwind CSS template
+    const htmlMessage = `
+      <!DOCTYPE html>
+      <html lang="en">
+      <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Password Reset</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+      </head>
+      <body class="bg-gray-100">
+        <div class="max-w-md mx-auto bg-white rounded-lg shadow-lg p-6 mt-10">
+          <!-- Icon -->
+          <div class="flex justify-center">
+            <img src="https://img.icons8.com/ios-filled/50/000000/email-open.png" alt="Email Icon" class="mb-4">
+          </div>
+
+          <!-- Title -->
+          <h2 class="text-center text-xl font-semibold text-gray-800 mb-4">Password Reset</h2>
+
+          <!-- Lock Icon -->
+          <div class="flex justify-center">
+            <div class="w-16 h-16 rounded-full bg-yellow-100 flex items-center justify-center mb-4">
+              <img src="https://img.icons8.com/material-rounded/48/000000/lock.png" alt="Lock Icon">
+            </div>
+          </div>
+
+          <!-- Message -->
+          <p class="text-gray-700 text-center mb-6">
+            Hello ${user.firstName},
+            <br>
+            Someone requested that the password for your SaaS account be reset.
+          </p>
+
+          <!-- Reset OTP -->
+          <div class="flex justify-center mb-6">
+            <span href="#" class="px-4 py-2 bg-blue-600 text-white font-medium rounded hover:bg-blue-700">
+              ${otp}
+            </span>
+          </div>
+
+          <!-- Info -->
+          <p class="text-sm text-gray-600 text-center mb-4">
+            If you didn't request this, you can ignore this email or let us know. Your password won't change until you create a new password.
+          </p>
+
+          <!-- Footer -->
+          <div class="text-center text-gray-500 text-sm border-t pt-4">
+            <p>© 2025 University of Ghana Gym, Inc. All rights reserved.</p>
+            <p>Legon Boundary, Accra, 23321 GHANA, 030 221 3850</p>
+            <p><a href="#" class="text-blue-600 hover:underline">unsubscribe</a></p>
+          </div>
+        </div>
+      </body>
+      </html>
+    `;
+
     // Send the OTP to the user's email
     const message = `Your OTP code is ${otp}. It will expire in 1 hour.`;
 
-    await sendEmail(user.email, 'Password Reset OTP', message);
+    await sendEmail(user.email, 'Password Reset OTP', message, htmlMessage);
 
     res.status(200).json({ message: "OTP sent to email" });
   } catch (error) {
