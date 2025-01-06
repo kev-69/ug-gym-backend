@@ -119,57 +119,88 @@ const getUserProfile = async (req, res) => {
   }
 };
 
-const forgotPasswordForUniversityUser = async (req, res) => {
+// Send OTP for password reset
+const sendOtp = async (req, res) => {
   const { email } = req.body;
 
   try {
-    const user = await UniversityUser.findOne({ email });
+    const user = await UniversityUser.findOne({ email }) || await PublicUser.findOne({ email });
     if (!user) {
-      return res.status(404).json({ message: "University user not found" });
+      return res.status(404).json({ message: "User not found" });
     }
 
-    // Generate a password reset token
-    const resetToken = crypto.randomBytes(32).toString("hex");
+    // Generate a 5-digit OTP
+    const otp = Math.floor(10000 + Math.random() * 90000).toString();
 
-    // Hash the reset token and set it to the user's passwordResetToken field
-    const hashedResetToken = crypto.createHash("sha256").update(resetToken).digest("hex");
-    user.passwordResetToken = hashedResetToken;
-    user.passwordResetExpires = Date.now() + 3600000; // 1 hour
+    // Hash the OTP and set it to the user's otp field
+    const hashedOtp = crypto.createHash("sha256").update(otp).digest("hex");
+    user.otp = hashedOtp;
+    user.otpExpires = Date.now() + 3600000; // 1 hour
 
     await user.save();
 
-    // Send the reset token to the user's email
-    // (Implement email sending logic here)
+    // Send the OTP to the user's email
+    const message = `Your OTP code is ${otp}. It will expire in 1 hour.`;
 
-    res.status(200).json({ message: "Password reset token sent to university user email" });
+    await sendEmail(user.email, 'Password Reset OTP', message);
+
+    res.status(200).json({ message: "OTP sent to email" });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
-const forgotPasswordForPublicUser = async (req, res) => {
-  const { email } = req.body;
+// Verify OTP for password reset
+const verifyOtp = async (req, res) => {
+  const { email, otp } = req.body;
 
   try {
-    const user = await PublicUser.findOne({ email });
+    const user = await UniversityUser.findOne({ email }) || await PublicUser.findOne({ email });
     if (!user) {
-      return res.status(404).json({ message: "Public user not found" });
+      return res.status(404).json({ message: "User not found" });
     }
 
-    // Generate a password reset token
-    const resetToken = crypto.randomBytes(32).toString("hex");
+    // Hash the OTP and compare it with the stored hashed OTP
+    const hashedOtp = crypto.createHash("sha256").update(otp).digest("hex");
 
-    // Hash the reset token and set it to the user's passwordResetToken field
-    const hashedResetToken = crypto.createHash("sha256").update(resetToken).digest("hex");
-    user.passwordResetToken = hashedResetToken;
-    user.passwordResetExpires = Date.now() + 3600000; // 1 hour
+    console.log('Provided OTP:', otp);
+    console.log('Hashed OTP:', hashedOtp);
+    console.log('Stored Hashed OTP:', user.otp);
+    console.log('OTP Expiry Time:', user.otpExpires);
+
+    if (hashedOtp !== user.otp || user.otpExpires < Date.now()) {
+      return res.status(400).json({ message: "Invalid or expired OTP" });
+    }
+
+    // OTP is valid, clear the OTP fields
+    user.otp = undefined;
+    user.otpExpires = undefined;
 
     await user.save();
 
-    // Send the reset token to the user's email
-    // (Implement email sending logic here)
+    res.status(200).json({ message: "OTP verified successfully" });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
 
-    res.status(200).json({ message: "Password reset token sent to public user email" });
+// Reset password
+const resetPassword = async (req, res) => {
+  const { email, newPassword } = req.body;
+
+  try {
+    const user = await UniversityUser.findOne({ email }) || await PublicUser.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Hash the new password
+    const salt = await bcrypt.genSalt(10);
+    user.password = await bcrypt.hash(newPassword, salt);
+
+    await user.save();
+
+    res.status(200).json({ message: "Password reset successfully" });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -180,6 +211,7 @@ module.exports = {
   loginUniversityUser,
   loginPublicUser,
   getUserProfile,
-  forgotPasswordForPublicUser,
-  forgotPasswordForUniversityUser
+  sendOtp,
+  verifyOtp,
+  resetPassword,
 };
