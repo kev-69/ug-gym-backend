@@ -1,6 +1,6 @@
 const nodemailer = require('nodemailer');
 
-const sendEmail = async (email, subject, message) => {
+const sendEmail = async (email, subject, message, htmlMessage) => {
     const transporter = nodemailer.createTransport({
         host: process.env.MAILSEND_SMTP_HOST, // Your MailSend SMTP host
         port: process.env.MAILSEND_SMTP_PORT, // Your MailSend SMTP port
@@ -15,7 +15,11 @@ const sendEmail = async (email, subject, message) => {
         from: process.env.MAILSEND_SMTP_LOGIN, // Your verified MailSend email
         to: email,
         subject: subject,
-        text: message
+        text: message,
+        html: htmlMessage,
+        headers: {
+        'Content-Type': 'text/html; charset=utf-8',
+    },
     };
     
     try {
