@@ -66,7 +66,14 @@ const universitySchema = new mongoose.Schema(
     },
       pendingAt: { 
         type: Date, 
-        default: null }
+        default: null 
+      },
+      otp: {
+        type: String,
+      },
+      otpExpires: {
+        type: Date,
+      },
     },
   { timestamps: true }
 );
@@ -122,7 +129,14 @@ const publicSchema = new mongoose.Schema({
   },
   pendingAt: { 
     type: Date, 
-    default: null }
+    default: null 
+  },
+  otp: {
+    type: String,
+  },
+  otpExpires: {
+    type: Date,
+  },
   },
   { timestamps: true }
 );
