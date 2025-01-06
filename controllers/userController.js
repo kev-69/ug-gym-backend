@@ -1,6 +1,8 @@
 const { UniversityUser, PublicUser } = require('../models/User');
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
+const crypto = require("crypto");
+const sendEmail = require("../utils/sendEmail");
 
 // Register a new user (University or Public)
 const registerUser = async (req, res) => {
@@ -117,9 +119,67 @@ const getUserProfile = async (req, res) => {
   }
 };
 
+const forgotPasswordForUniversityUser = async (req, res) => {
+  const { email } = req.body;
+
+  try {
+    const user = await UniversityUser.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ message: "University user not found" });
+    }
+
+    // Generate a password reset token
+    const resetToken = crypto.randomBytes(32).toString("hex");
+
+    // Hash the reset token and set it to the user's passwordResetToken field
+    const hashedResetToken = crypto.createHash("sha256").update(resetToken).digest("hex");
+    user.passwordResetToken = hashedResetToken;
+    user.passwordResetExpires = Date.now() + 3600000; // 1 hour
+
+    await user.save();
+
+    // Send the reset token to the user's email
+    // (Implement email sending logic here)
+
+    res.status(200).json({ message: "Password reset token sent to university user email" });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+const forgotPasswordForPublicUser = async (req, res) => {
+  const { email } = req.body;
+
+  try {
+    const user = await PublicUser.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ message: "Public user not found" });
+    }
+
+    // Generate a password reset token
+    const resetToken = crypto.randomBytes(32).toString("hex");
+
+    // Hash the reset token and set it to the user's passwordResetToken field
+    const hashedResetToken = crypto.createHash("sha256").update(resetToken).digest("hex");
+    user.passwordResetToken = hashedResetToken;
+    user.passwordResetExpires = Date.now() + 3600000; // 1 hour
+
+    await user.save();
+
+    // Send the reset token to the user's email
+    // (Implement email sending logic here)
+
+    res.status(200).json({ message: "Password reset token sent to public user email" });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 module.exports = {
   registerUser,
   loginUniversityUser,
   loginPublicUser,
-  getUserProfile
+  getUserProfile,
+  forgotPasswordForPublicUser,
+  forgotPasswordForUniversityUser
 };
