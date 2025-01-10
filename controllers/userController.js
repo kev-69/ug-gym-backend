@@ -26,6 +26,11 @@ const registerUser = async (req, res) => {
       const user = await PublicUser.create({
         firstName, lastName, email, phone, userType, password: hashedPassword
       });
+
+      // Generate membership ID using the first 8 characters of the user's _id
+      user.membershipId = user._id.toString().slice(0, 8);
+      await user.save();
+
       return res.status(201).json({ message: "Public user registered successfully", user });
     }
 
@@ -36,6 +41,10 @@ const registerUser = async (req, res) => {
     const user = await UniversityUser.create({
       firstName, lastName, email, phone, userType, universityId, hallOrDepartment, password: hashedPassword, medicalCondition
     });
+
+    // Generate membership ID using the first 8 characters of the user's _id
+    user.membershipId = user._id.toString().slice(0, 8);
+    await user.save();
 
     return res.status(201).json({ message: "University user registered successfully", user});
   } catch (error) {
@@ -263,6 +272,34 @@ const resetPassword = async (req, res) => {
   }
 };
 
+// Generate ID card information
+const generateId = async (req, res) => {
+  const { _id } = req.body;
+
+  try {
+    const user = await UniversityUser.findOne({ _id }) || await PublicUser.findOne({ _id });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const idCardInfo = {
+      passportPhoto: user.passportPhoto,
+      membershipId: user.membershipId,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      subscription: {
+        package: user.subscription.package,
+        startDate: user.subscription.startDate,
+        endDate: user.subscription.endDate,
+      },
+    };
+
+    res.status(200).json({ message: "ID card information generated successfully", idCardInfo });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 module.exports = {
   registerUser,
   loginUniversityUser,
@@ -271,4 +308,5 @@ module.exports = {
   sendOtp,
   verifyOtp,
   resetPassword,
+  generateId,
 };
