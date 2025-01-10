@@ -16,6 +16,9 @@ const universitySchema = new mongoose.Schema(
       required: true,
       unique: true,
     },
+    passportPhoto: {
+      type: String,
+    },
     medicalCondition: {
       type: String,
     },
@@ -41,6 +44,10 @@ const universitySchema = new mongoose.Schema(
     password: {
       type: String,
       required: true,
+    },
+    membershipId: {
+      type: String,
+      unique: true,
     },
     subscription: {
       package: {
@@ -93,6 +100,9 @@ const publicSchema = new mongoose.Schema({
     required: true,
     unique: true,
   },
+  passportPhoto: {
+    type: String,
+  },
   phone: {
     type: String,
     required: true,
@@ -104,6 +114,10 @@ const publicSchema = new mongoose.Schema({
   password: {
     type: String,
     required: true,
+  },
+  membershipId: {
+    type: String,
+    unique: true,
   },
   subscription: {
     package: {
