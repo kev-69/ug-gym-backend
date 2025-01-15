@@ -3,6 +3,20 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const crypto = require("crypto");
 const sendEmail = require("../utils/sendEmail");
+const multer = require('multer');
+const path = require('path');
+const cloudinary = require("../config/cloudinary")
+
+// Configure multer for file uploads
+// const storage = multer.diskStorage({
+//   destination: (req, file, cb) => {
+//     cb(null, 'uploads/');
+//   },
+//   filename: (req, file, cb) => {
+//     cb(null, `${Date.now()}-${file.originalname}`);
+//   }
+// });
+// const upload = multer({ storage });
 
 // Register a new user (University or Public)
 const registerUser = async (req, res) => {
@@ -300,6 +314,31 @@ const generateId = async (req, res) => {
   }
 };
 
+// Update user's passport photo
+const updatePassportPhoto = async (req, res) => {
+  const userId = req.user.id; // Assuming you have middleware to set req.user
+  const passportPhoto = req.file.path;
+
+  try {
+    // Upload the photo to Cloudinary
+    const result = await cloudinary.uploader.upload(passportPhoto, {
+      folder: 'passport_photos',
+    });
+
+    const user = await UniversityUser.findById(userId) || await PublicUser.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    user.passportPhoto = result.secure_url;
+    await user.save();
+
+    res.status(200).json({ message: "Passport photo updated successfully", user });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 module.exports = {
   registerUser,
   loginUniversityUser,
@@ -309,4 +348,5 @@ module.exports = {
   verifyOtp,
   resetPassword,
   generateId,
+  updatePassportPhoto,
 };
