@@ -193,7 +193,7 @@ const sendOtp = async (req, res) => {
           <p class="text-gray-700 text-center mb-6">
             Hello ${user.firstName},
             <br>
-            Someone requested that the password for your SaaS account be reset.
+            Someone requested that the password for your account be reset.
           </p>
 
           <!-- Reset OTP -->
@@ -220,9 +220,9 @@ const sendOtp = async (req, res) => {
     `;
 
     // Send the OTP to the user's email
-    const message = `Your OTP code is ${otp}. It will expire in 1 hour.`;
+    // const message = `Your OTP code is ${otp}. It will expire in 1 hour.`;
 
-    await sendEmail(user.email, 'Password Reset OTP', message, htmlMessage);
+    await sendEmail(user.email, 'Password Reset OTP', htmlMessage);
 
     res.status(200).json({ message: "OTP sent to email" });
   } catch (error) {

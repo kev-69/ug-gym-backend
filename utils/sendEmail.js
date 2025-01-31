@@ -15,11 +15,11 @@ const sendEmail = async (email, subject, message, htmlMessage) => {
         from: process.env.MAILSEND_SMTP_LOGIN, // Your verified MailSend email
         to: email,
         subject: subject,
-        text: message,
+        // text: message,
         html: htmlMessage,
-        headers: {
-        'Content-Type': 'text/html; charset=utf-8',
-    },
+        // headers: {
+        //     'Content-Type': 'text/html; charset=utf-8',
+        // },
     };
     
     try {
